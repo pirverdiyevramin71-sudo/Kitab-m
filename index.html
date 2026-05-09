@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="az" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Professional Kitabxanam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Cinzel:wght@500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tr: 0.3s ease;
+            /* Dark Theme (Şəkildəki kimi tünd qara) */
+            --bg: #000000;
+            --surface: #121212;
+            --text: #e0e0e0;
+            --gold: #c8a96e;
+            --accent: #b8962a;
+            --border: #222;
+        }
+
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --text: #1a1a1a;
+            --gold: #8c7341;
+            --border: #ddd;
+        }
+
+        [data-theme="sepia"] {
+            --bg: #f4ecd8;
+            --surface: #e8dfc4;
+            --text: #5b4636;
+            --gold: #8c7341;
+            --border: #d3c7a7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background var(--tr);
+        }
+
+        /* ─── PROFESSIONAL OXUCU REJİMİ ─── */
+        .reader-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header-nav {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        /* ─── AXTARIŞ SAHƏSİ (Yaxınlaşmanı həll edən hissə) ─── */
+        .search-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            width: 100%;
+            /* Mobil fokus zoom-un qarşısını almaq üçün minimum 16px */
+            font-size: 16px; 
+            outline: none;
+        }
+
+        /* ─── OXU MƏTNİ ─── */
+        #readerText {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.25rem; /* Default */
+            text-align: justify;
+            margin-top: 30px;
+            white-space: pre-wrap;
+            transition: font-size 0.2s ease;
+        }
+
+        /* Ayə nömrələri kimi xırda detallar üçün stil */
+        .verse-num {
+            font-size: 0.6em;
+            vertical-align: super;
+            color: var(--gold);
+            margin-right: 5px;
+        }
+
+        /* ─── İDARƏETMƏ PANELİ (Aşağıda) ─── */
+        .bottom-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            transition: var(--tr);
+        }
+
+        .control-btn:hover { color: var(--gold); }
+
+        .font-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 1px solid var(--border);
+            padding-right: 15px;
+        }
+
+        .theme-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        mark {
+            background: var(--gold);
+            color: black;
+            border-radius: 2px;
+        }
+
+        /* ─── MOBİL UYĞUNLUQ ─── */
+        @media (max-width: 600px) {
+            #readerText { font-size: 1.1rem; padding-bottom: 100px; }
+            .book-title { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="reader-container">
+    <header class="header-nav">
+        <button class="control-btn" onclick="goBack()">✕</button>
+        <div class="book-title" id="bookTitle">Allahın Musaya verdiyi əlamətlər</div>
+        <button class="control-btn" onclick="toggleSearch()">🔍</button>
+    </header>
+
+    <div id="searchArea" style="display: none;">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Mətndə axtarın..." oninput="searchText()">
+        </div>
+    </div>
+
+    <main id="readerText">
+        <span class="verse-num">1</span> Musa belə cavab verdi: «Bəlkə onlar mənə inanmayaraq sözümə qulaq asmayıb “Rəbb sənə görünməyib” deyəcəklər?» 
+        <span class="verse-num">2</span> Rəbb Musaya dedi: «Sənin əlindəki nədir?» O dedi: «Əsa». <span class="verse-num">3</span> Rəbb dedi: «Onu yerə at». Musa onu yerə atdı və əsa ilan oldu. 
+    </main>
+</div>
+
+<div class="bottom-controls">
+    <div class="font-controls">
+        <button class="control-btn" onclick="changeFontSize(-2)">A-</button>
+        <button class="control-btn" onclick="changeFontSize(2)">A+</button>
+    </div>
+    
+    <div class="theme-dots">
+        <div class="dot" style="background: #ffffff;" onclick="setTheme('light')"></div>
+        <div class="dot" style="background: #f4ecd8;" onclick="setTheme('sepia')"></div>
+        <div class="dot" style="background: #121212;" onclick="setTheme('dark')"></div>
+    </div>
+
+    <button class="control-btn" onclick="toggleFullScreen()">⛶</button>
+</div>
+
+<script>
+    let currentFontSize = 20;
+
+    // Şrift ölçüsünü dəyişmək
+    function changeFontSize(delta) {
+        currentFontSize += delta;
+        if(currentFontSize < 12) currentFontSize = 12;
+        if(currentFontSize > 40) currentFontSize = 40;
+        document.getElementById('readerText').style.fontSize = currentFontSize + 'px';
+        localStorage.setItem('pref-font-size', currentFontSize);
+    }
+
+    // Mövzu seçimi
+    function setTheme(mode) {
+        document.documentElement.setAttribute('data-theme', mode);
+        localStorage.setItem('pref-theme', mode);
+    }
+
+    // Axtarış panelini aç/bağla
+    function toggleSearch() {
+        const area = document.getElementById('searchArea');
+        area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        if(area.style.display === 'block') {
+            document.getElementById('searchInput').focus();
+        }
+    }
+
+    // Professional Axtarış (Mətni vurğulamaq)
+    function searchText() {
+        const query = document.getElementById('searchInput').value.trim();
+        const content = document.getElementById('readerText');
+        const originalText = content.innerText;
+
+        if (query.length < 2) {
+            content.innerHTML = originalText;
+            return;
+        }
+
+        const regex = new RegExp(`(${query})`, 'gi');
+        content.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+    }
+
+    // Tam ekran rejimi
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    // İlkin ayarları yüklə
+    window.onload = () => {
+        const savedTheme = localStorage.getItem('pref-theme') || 'dark';
+        const savedSize = localStorage.getItem('pref-font-size') || 20;
+        setTheme(savedTheme);
+        currentFontSize = parseInt(savedSize);
+        document.getElementById('readerText').style.fontSize = currentFontSize + 'px';
+    };
+
+    function goBack() {
+        alert("Kitabxanaya qayıdış...");
+    }
+</script>
+
+</body>
+</html>
