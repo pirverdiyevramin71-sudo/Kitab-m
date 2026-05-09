@@ -1,477 +1,895 @@
 <!DOCTYPE html>
 <html lang="az" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Kitabxanam v3.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --tr: 0.25s cubic-bezier(.4,0,.2,1);
-            --bg: #000000;
-            --surface: #0a0a0a;
-            --card: #111111;
-            --card-hover: #161616;
-            --border: #1a1a1a;
-            --border-soft: #222222;
-            --gold: #c8a96e;
-            --gold-glow: rgba(200,169,110,0.15);
-            --text: #e0e0e0;
-            --text-s: #a0a0a0;
-            --text-m: #666666;
-            --blue: #5b9bd5;
-            --red: #e74c3c;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kitabxanam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root { --tr: 0.22s cubic-bezier(.4,0,.2,1); }
 
-        [data-theme="light"] {
-            --bg: #fcfaf5; --surface: #f2eee3; --card: #ffffff;
-            --border: #e0d9c5; --text: #1a1a1a; --text-s: #4a4a4a;
-            --gold: #8c7341;
-        }
+[data-theme="dark"] {
+  --bg:#0d0c09; --surface:#141310; --card:#1b1916; --card-hover:#222019;
+  --border:#2e2b24; --border-soft:#1e1c17;
+  --gold:#c8a96e; --gold-b:#e2c485; --gold-d:#6e5b32; --gold-glow:rgba(200,169,110,.16);
+  --red:#b85c5c; --blue:#6b9cc9; --green:#6dab82;
+  --text:#e6dcc8; --text-s:#a8997e; --text-m:#5a5040; --text-f:#2e2b22;
+  --page:#f7f2e8; --page2:#eee8d8; --page-t:#1c1710; --page-s:#5c503c; --page-b:#d5c9b0;
+  --sb:#2e2b24; --shd:0 8px 40px rgba(0,0,0,.55); --shd2:0 24px 80px rgba(0,0,0,.75);
+}
+[data-theme="light"] {
+  --bg:#ede8dc; --surface:#e2ddd2; --card:#faf7f0; --card-hover:#f5f0e5;
+  --border:#cbc3b0; --border-soft:#d8d3c8;
+  --gold:#7a5c10; --gold-b:#9a7520; --gold-d:#b8952a; --gold-glow:rgba(122,92,16,.12);
+  --red:#8b2a2a; --blue:#2c5f8a; --green:#2e7a4e;
+  --text:#1c1710; --text-s:#5c4e36; --text-m:#8e7e60; --text-f:#c8bfa8;
+  --page:#fffdf6; --page2:#f5f0e4; --page-t:#14100a; --page-s:#4a3e2a; --page-b:#ddd4bc;
+  --sb:#c8c0a8; --shd:0 4px 24px rgba(0,0,0,.10); --shd2:0 12px 48px rgba(0,0,0,.16);
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; transition: background var(--tr); }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px; -webkit-text-size-adjust: 100%; touch-action: manipulation;}
+body{
+  background:var(--bg); color:var(--text); font-family:'Lato',sans-serif;
+  min-height:100vh; overflow-x:hidden; transition:background var(--tr),color var(--tr);
+  -webkit-overflow-scrolling: touch;
+}
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--sb);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-d);}
 
-        .view { display: none; min-height: 100vh; flex-direction: column; }
-        .view.active { display: flex; }
+.view{display:none;min-height:100vh;}
+.view.active{display:flex;flex-direction:column;}
 
-        /* ── TOPBAR ── */
-        .topbar {
-            height: 60px; background: var(--bg); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; padding: 0 20px; gap: 15px;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .brand { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); letter-spacing: 3px; flex: 1; }
+/* ── TOPBAR ── */
+.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:50;transition:background var(--tr),border-color var(--tr);}
+.topbar-brand{font-family:'Cinzel',serif;font-size:1rem;font-weight:500;color:var(--gold);letter-spacing:3px;text-transform:uppercase;flex:1;}
 
-        /* ── LIBRARY ── */
-        .hero { padding: 40px 20px; background: linear-gradient(to bottom, var(--surface), var(--bg)); border-bottom: 1px solid var(--border); }
-        .hero h1 { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold); margin-bottom: 10px; }
-        
-        .stats-row { display: flex; gap: 30px; margin-top: 20px; }
-        .stat-box { display: flex; flex-direction: column; }
-        .stat-val { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--gold); }
-        .stat-lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--text-m); letter-spacing: 1px; }
+.icon-btn{background:none;border:1px solid transparent;color:var(--text-s);width:36px;height:36px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all var(--tr);flex-shrink:0; -webkit-tap-highlight-color: transparent;}
+.icon-btn:hover{background:var(--gold-glow);border-color:var(--border);color:var(--gold);}
+.icon-btn.active{color:var(--gold);background:var(--gold-glow);border-color:var(--gold-d);}
 
-        .search-area { padding: 15px 20px; display: flex; gap: 10px; }
-        .input-wrap { flex: 1; position: relative; }
-        .main-input {
-            width: 100%; background: var(--card); border: 1px solid var(--border);
-            color: var(--text); padding: 12px 15px; border-radius: 8px; outline: none;
-            font-size: 16px; transition: var(--tr);
-        }
-        .main-input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+.theme-toggle{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3px;display:flex;gap:2px;}
+.theme-pill{padding:3px 11px;border-radius:14px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-m);transition:all var(--tr);cursor:pointer;border:none;background:none;font-family:'Lato',sans-serif;}
+.theme-pill.on{background:var(--gold);color:#fff;}
+[data-theme="light"] .theme-pill.on{color:#1c1710;}
 
-        .btn-gold {
-            background: var(--gold); color: black; border: none; padding: 0 20px;
-            border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.8rem;
-            font-weight: 600; cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 8px;
-        }
-        .btn-gold:hover { transform: translateY(-2px); opacity: 0.9; }
+/* ── LIBRARY ── */
+#v-library{background:var(--bg);}
 
-        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
-        .book-card {
-            background: var(--card); border: 1px solid var(--border); padding: 15px;
-            border-radius: 4px; cursor: pointer; transition: var(--tr); position: relative;
-            display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 2/3;
-        }
-        .book-card:hover { border-color: var(--gold); background: var(--card-hover); transform: translateY(-5px); }
-        .book-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; line-height: 1.2; }
-        .book-card .author { font-size: 0.75rem; color: var(--text-m); margin-top: 5px; }
-        .progress-mini { height: 2px; background: var(--border); margin-top: 15px; position: relative; }
-        .progress-fill { height: 100%; background: var(--gold); transition: width 0.5s; }
+.lib-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:36px 52px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.lib-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);}
+.lib-hero-text h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:600;color:var(--gold);letter-spacing:4px;text-transform:uppercase;line-height:1;}
+.lib-hero-text p{font-size:.75rem;color:var(--text-m);letter-spacing:2.5px;text-transform:uppercase;margin-top:7px;font-weight:300;}
 
-        /* ── READER ── */
-        .reader-body { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
-        .sidebar {
-            width: 300px; background: var(--surface); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; transition: transform 0.3s;
-        }
-        .sidebar.hidden { display: none; }
-        .side-tabs { display: flex; border-bottom: 1px solid var(--border); }
-        .tab-btn {
-            flex: 1; padding: 15px; background: none; border: none; color: var(--text-m);
-            font-size: 0.7rem; font-weight: 600; text-transform: uppercase; cursor: pointer;
-        }
-        .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+.lib-stats{display:flex;gap:28px;}
+.stat-item{text-align:right;}
+.stat-num{font-family:'Cinzel',serif;font-size:1.7rem;color:var(--gold);line-height:1;}
+.stat-label{font-size:.65rem;color:var(--text-m);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
 
-        .side-content { flex: 1; overflow-y: auto; padding: 15px; }
+.lib-search-wrap{padding:14px 52px;background:var(--surface);border-bottom:1px solid var(--border-soft);display:flex;gap:12px;align-items:center;}
+.search-wrap-inner{flex:1;position:relative;}
+.search-wrap-inner svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none;}
+.lib-search{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px 8px 36px;font-family:'Lato',sans-serif;font-size:.88rem;border-radius:6px;outline:none;transition:border-color var(--tr);}
+.lib-search::placeholder{color:var(--text-m);}
+.lib-search:focus{border-color:var(--gold);}
 
-        .reader-main { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; }
-        .reader-content {
-            max-width: 700px; margin: 0 auto; padding: 60px 25px 150px;
-            font-family: 'Cormorant Garamond', serif; font-size: 1.3rem;
-            line-height: 1.8; text-align: justify; white-space: pre-wrap;
-        }
+.btn-primary{background:var(--gold);border:none;color:#0d0c09;padding:8px 22px;font-family:'Cinzel',serif;font-size:.75rem;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;white-space:nowrap;transition:all var(--tr);display:flex;align-items:center;gap:7px;}
+.btn-primary:hover{background:var(--gold-b);transform:translateY(-1px);box-shadow:0 4px 16px var(--gold-glow);}
+[data-theme="light"] .btn-primary{color:#fff;}
 
-        /* SEARCH BAR IN READER */
-        .reader-search {
-            background: var(--surface); border-bottom: 1px solid var(--border);
-            padding: 10px 20px; display: none; align-items: center; gap: 10px;
-        }
-        .reader-search.active { display: flex; }
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:22px;padding:30px 52px;}
 
-        /* BOTTOM BAR */
-        .bottom-nav {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            background: var(--card); border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 50px; display: flex; gap: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; align-items: center;
-        }
-        .icon-btn { background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
-        .icon-btn:hover { color: var(--gold); }
+.book-card{cursor:pointer;position:relative;transition:transform var(--tr);animation:fadeUp .35s ease both; -webkit-tap-highlight-color: transparent;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.book-card:hover{transform:translateY(-5px);}
 
-        /* HIGHLIGHTS & NOTES */
-        mark { background: var(--gold); color: black; border-radius: 2px; cursor: pointer; }
-        mark.current { outline: 2px solid white; box-shadow: 0 0 15px var(--gold); }
-        .note-item { background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.85rem; }
+.book-spine{width:100%;aspect-ratio:3/4.5;background:var(--card);border:1px solid var(--border);border-left:5px solid var(--gold-d);border-radius:0 3px 3px 0;display:flex;flex-direction:column;padding:16px 13px 13px;position:relative;overflow:hidden;box-shadow:-4px 6px 18px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.02);transition:box-shadow var(--tr),border-color var(--tr);}
+.book-card:hover .book-spine{box-shadow:-6px 12px 36px rgba(0,0,0,.45);border-left-color:var(--gold);}
+.book-spine::after{content:'';position:absolute;top:0;left:0;right:0;height:35%;background:linear-gradient(180deg,rgba(200,169,110,.05),transparent);pointer-events:none;}
 
-        /* MODALS */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
-        }
-        .modal-box { background: var(--card); width: 100%; max-width: 600px; border: 1px solid var(--border); padding: 30px; border-radius: 8px; }
+.bk-ornament{display:flex;align-items:center;gap:5px;margin-bottom:10px;}
+.bk-ornament::before,.bk-ornament::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d));}
+.bk-ornament::after{background:linear-gradient(90deg,var(--gold-d),transparent);}
+.bk-diamond{width:4px;height:4px;background:var(--gold-d);transform:rotate(45deg);flex-shrink:0;transition:background var(--tr);}
+.book-card:hover .bk-diamond{background:var(--gold);}
 
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; inset: 0; z-index: 1000; width: 100%; transform: translateX(-100%); display: flex !important; }
-            .sidebar.active { transform: translateX(0); }
-            .reader-content { font-size: 1.15rem; }
-        }
-    </style>
+.bk-title{font-family:'Cormorant Garamond',serif;font-size:.98rem;font-weight:500;color:var(--text);line-height:1.35;flex:1;word-break:break-word;z-index:1;}
+.bk-author{font-family:'Lato',sans-serif;font-size:.65rem;font-weight:300;color:var(--text-m);letter-spacing:.8px;margin-top:8px;z-index:1;}
+.bk-pct-row{margin-top:10px;z-index:1;}
+.bk-pct-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;}
+.bk-pct-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));border-radius:1px;transition:width .4s;}
+.bk-pct-lbl{font-size:.6rem;color:var(--text-m);margin-top:4px;display:flex;justify-content:space-between;letter-spacing:.3px;}
+
+.bk-badge{position:absolute;top:8px;right:8px;background:var(--gold);color:#0d0c09;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.8px;text-transform:uppercase;z-index:2;}
+[data-theme="light"] .bk-badge{color:#fff;}
+
+.bk-del{position:absolute;bottom:8px;right:8px;background:rgba(184,92,92,.8);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:10;}
+.book-card:hover .bk-del{display:flex;}
+.bk-del:hover{background:#c0392b;}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:90px 20px;color:var(--text-m);}
+.empty-state .ei{font-size:3rem;opacity:.2;display:block;margin-bottom:14px;}
+.empty-state p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;}
+
+/* ── READER ── */
+#v-reader{background:var(--bg);}
+
+.reader-topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;position:sticky;top:0;z-index:60;flex-shrink:0;transition:background var(--tr);}
+.reader-title{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.divv{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+
+.rsearch-bar{position:sticky;top:52px;z-index:55;background:var(--surface);border-bottom:1px solid var(--border);padding:8px 14px;display:none;align-items:center;gap:10px;}
+.rsearch-bar.open{display:flex;}
+.rsi{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 11px;font-family:'Lato',sans-serif;font-size:.85rem;outline:none;border-radius:4px;transition:border-color var(--tr);}
+.rsi:focus{border-color:var(--gold);}
+.rsi::placeholder{color:var(--text-m);}
+.rsc{font-size:.73rem;color:var(--text-m);white-space:nowrap;min-width:56px;text-align:right;}
+.rsnav{display:flex;gap:4px;}
+.rsnav button{background:none;border:1px solid var(--border);color:var(--text-s);width:28px;height:28px;cursor:pointer;border-radius:4px;font-size:.8rem;transition:all var(--tr);display:flex;align-items:center;justify-content:center;}
+.rsnav button:hover{border-color:var(--gold);color:var(--gold);}
+
+.reader-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 52px);}
+
+/* Sidebar */
+.sidebar{width:272px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width var(--tr),opacity var(--tr);}
+.sidebar.closed{width:0;opacity:0;pointer-events:none;}
+.stabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.stab{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-m);font-family:'Lato',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:all var(--tr);white-space:nowrap;}
+.stab:hover{color:var(--text-s);}
+.stab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.sidebar-content{flex:1;overflow-y:auto;padding:10px;}
+.sidebar-panel{display:none;}
+.sidebar-panel.active{display:block;}
+
+.bm-item{padding:10px 11px;border-radius:5px;cursor:pointer;border:1px solid var(--border-soft);margin-bottom:7px;background:var(--card);transition:all var(--tr);}
+.bm-item:hover{border-color:var(--gold-d);background:var(--card-hover);}
+.bm-preview{font-family:'Cormorant Garamond',serif;font-size:.87rem;color:var(--text-s);font-style:italic;line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.bm-meta{font-size:.62rem;color:var(--text-m);display:flex;justify-content:space-between;align-items:center;}
+.bm-del{background:none;border:none;color:var(--text-m);cursor:pointer;font-size:.8rem;padding:2px 4px;border-radius:3px;transition:color var(--tr);}
+.bm-del:hover{color:var(--red);}
+
+.note-item{padding:10px 11px;border-radius:5px;border:1px solid var(--border-soft);margin-bottom:7px;background:var(--card);transition:all var(--tr);}
+.note-item:hover{border-color:var(--blue);}
+.note-prev{font-size:.82rem;color:var(--text);line-height:1.4;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.note-ctx{font-family:'Cormorant Garamond',serif;font-size:.78rem;color:var(--text-m);font-style:italic;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px;}
+.note-meta2{font-size:.62rem;color:var(--text-m);display:flex;justify-content:space-between;}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:11px;text-align:center;}
+.sc-num{font-family:'Cinzel',serif;font-size:1.25rem;color:var(--gold);display:block;}
+.sc-lbl{font-size:.6rem;color:var(--text-m);letter-spacing:.8px;text-transform:uppercase;margin-top:2px;display:block;}
+
+.timer-box{background:var(--card);border:1px solid var(--gold-d);border-radius:5px;padding:14px;text-align:center;margin-top:9px;}
+.timer-time{font-family:'Cinzel',serif;font-size:1.75rem;color:var(--gold);letter-spacing:3px;}
+.timer-lbl{font-size:.62rem;color:var(--text-m);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.timer-btn{margin-top:9px;background:var(--gold-glow);border:1px solid var(--gold-d);color:var(--gold);padding:5px 18px;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all var(--tr);}
+.timer-btn:hover{background:var(--gold);color:#0d0c09;}
+[data-theme="light"] .timer-btn:hover{color:#fff;}
+
+.sb-empty{text-align:center;padding:28px 10px;color:var(--text-m);font-size:.82rem;font-style:italic;font-family:'Cormorant Garamond',serif;line-height:1.6;}
+
+/* Scroll + Page */
+.scroll-area{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:36px 20px 80px;scroll-behavior:smooth; -webkit-overflow-scrolling: touch;}
+
+.page-wrap{width:100%;max-width:720px;background:var(--page);color:var(--page-t);box-shadow:var(--shd2);position:relative;transition:background var(--tr);}
+.page-wrap::before{content:'';position:absolute;top:0;left:0;bottom:0;width:26px;background:linear-gradient(90deg,rgba(0,0,0,.06),transparent);pointer-events:none;z-index:1;}
+
+.page-header{padding:38px 64px 24px;border-bottom:1px solid var(--page-b);text-align:center;background:var(--page2);}
+.ph-orn{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
+.ph-orn::before,.ph-orn::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#b8962a);}
+.ph-orn::after{background:linear-gradient(90deg,#b8962a,transparent);}
+.ph-cross{font-size:.95rem;color:#b8962a;}
+.ph-title{font-family:'Cinzel',serif;font-size:clamp(1rem,3vw,1.45rem);font-weight:600;color:#2c1f0a;letter-spacing:2px;text-transform:uppercase;}
+.ph-author{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:#6b5030;margin-top:6px;}
+
+.page-inner{padding:48px 64px 64px;position:relative;}
+.reader-text{font-family:'Cormorant Garamond',serif;font-size:1.25rem;line-height:1.95;color:var(--page-t);white-space:pre-wrap;word-break:break-word;text-align:justify;-webkit-user-select:text;user-select:text;transition:font-size var(--tr);}
+
+.mark{cursor: pointer; position: relative; transition: background 0.2s;}
+mark.hl-y{background:rgba(255,210,0,.35);border-radius:2px;}
+mark.hl-b{background:rgba(107,156,201,.35);border-radius:2px;}
+mark.hl-g{background:rgba(109,171,130,.35);border-radius:2px;}
+mark.sh{background:rgba(200,169,110,.38);border-radius:2px;}
+mark.sh.cur{background:rgba(200,169,110,.82);outline:2px solid var(--gold);}
+
+/* Bottom bar */
+.reader-bottombar{position:fixed;bottom:0;left:0;right:0;height:48px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;z-index:60;transition:background var(--tr);}
+.pbar-bg{position:absolute;inset:0;pointer-events:none;}
+.pbar-fill{height:100%;background:var(--gold-glow);transition:width .4s;}
+.pbar-line{position:absolute;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .4s;}
+.bbar-inner{position:relative;z-index:1;width:100%;display:flex;align-items:center;padding:0 22px;gap:18px;}
+.pct-disp{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:1px;white-space:nowrap;min-width:36px;}
+.pos-disp{font-size:.68rem;color:var(--text-m);flex:1;letter-spacing:.3px;}
+
+.font-wrap{display:flex;align-items:center;gap:8px;}
+.font-btn{background:none;border:1px solid var(--border);color:var(--text-s);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all var(--tr); font-family:'Cormorant Garamond',serif; -webkit-tap-highlight-color: transparent;}
+.font-btn:hover{background:var(--gold-glow);border-color:var(--gold);color:var(--gold);}
+.font-size-disp{font-family:'Cinzel',serif;font-size:.7rem;color:var(--text-s);min-width:28px;text-align:center;}
+
+/* ── NOTE MODAL ── */
+.note-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.note-modal.open{display:flex;}
+.nm-box{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--blue);width:100%;max-width:460px;border-radius:2px;overflow:hidden;animation:popIn .22s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.nm-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.nm-header h3{font-family:'Cinzel',serif;font-size:.8rem;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;}
+.nm-quote{padding:11px 18px;background:var(--surface);border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.87rem;color:var(--text-s);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.nm-ta{display:block;width:100%;background:var(--card);border:none;color:var(--text);padding:13px 18px;font-family:'Lato',sans-serif;font-size:.9rem;line-height:1.6;resize:none;height:110px;outline:none;}
+.nm-footer{padding:9px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.hl-btns{display:flex;gap:6px;align-items:center;}
+.hl-btns span{font-size:.62rem;color:var(--text-m);letter-spacing:.8px;text-transform:uppercase;margin-right:3px;}
+.hl-btn{width:19px;height:19px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform var(--tr);}
+.hl-btn:hover{transform:scale(1.2);}
+.hl-btn.y{background:rgba(255,210,0,.7);}
+.hl-btn.b{background:rgba(107,156,201,.7);}
+.hl-btn.g{background:rgba(109,171,130,.7);}
+.nm-btns{display:flex;gap:7px;}
+.btn-sm{padding:6px 15px;font-family:'Lato',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.5px;cursor:pointer;border-radius:3px;transition:all var(--tr);}
+.btn-ghost2{background:none;border:1px solid var(--border);color:var(--text-m);}
+.btn-ghost2:hover{border-color:var(--text-s);color:var(--text);}
+.btn-blue{background:var(--blue);border:1px solid var(--blue);color:#fff;}
+.btn-blue:hover{filter:brightness(1.12);}
+
+/* ── ADD BOOK MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--gold);width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;animation:popIn .28s ease;}
+.modal-hdr{padding:18px 22px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-hdr h2{font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;}
+.modal-body{padding:18px 22px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.form-lbl{display:block;font-size:.66rem;font-weight:700;color:var(--text-m);letter-spacing:1.8px;text-transform:uppercase;margin-bottom:6px;}
+.form-hint{font-size:.66rem;color:var(--text-m);font-style:italic;margin-top:3px;}
+.form-input,.form-ta{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:'Lato',sans-serif;font-size:.9rem;outline:none;border-radius:3px;transition:border-color var(--tr);}
+.form-input:focus,.form-ta:focus{border-color:var(--gold);}
+.form-input::placeholder,.form-ta::placeholder{color:var(--text-m);}
+.form-ta{min-height:195px;resize:vertical;line-height:1.65;}
+.modal-ftr{padding:12px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:9px;align-items:center;}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--text-s);padding:7px 18px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;border-radius:3px;transition:all var(--tr);}
+.btn-ghost:hover{border-color:var(--text-s);color:var(--text);}
+
+/* Toast */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--gold);color:#0d0c09;padding:7px 18px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.5px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+[data-theme="light"] .toast{color:#fff;}
+
+@media(max-width:768px){
+  .books-grid{padding:18px;gap:14px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  .lib-hero{padding:22px 18px 18px;}
+  .lib-stats{display:none;}
+  .lib-search-wrap{padding:10px 18px;}
+  .sidebar{display:none;}
+  .page-inner,.page-header{padding-left:28px;padding-right:28px;}
+}
+</style>
 </head>
 <body>
 
-<div id="libView" class="view active">
-    <div class="topbar">
-        <div class="brand">✦ Kitabxanam</div>
-        <button class="icon-btn" onclick="toggleTheme()">🌓</button>
-    </div>
-    
-    <div class="hero">
-        <h1>Mənim Rafım</h1>
-        <div class="stats-row">
-            <div class="stat-box"><span class="stat-val" id="totalBooks">0</span><span class="stat-lbl">Kitab</span></div>
-            <div class="stat-box"><span class="stat-val" id="totalTime">0d</span><span class="stat-lbl">Oxuma</span></div>
-        </div>
-    </div>
+<div class="toast" id="toast"></div>
 
-    <div class="search-area">
-        <div class="input-wrap">
-            <input type="text" class="main-input" id="libSearch" placeholder="Kitab axtar..." oninput="renderLibrary()">
-        </div>
-        <button class="btn-gold" onclick="showModal('addBookModal')">➕ ƏLAVƏ ET</button>
+<!-- ═══ LIBRARY ═══ -->
+<div id="v-library" class="view active">
+  <div class="topbar">
+    <div class="topbar-brand">✦ Kitabxanam</div>
+    <div class="theme-toggle">
+      <button class="theme-pill on" id="pd" onclick="setTheme('dark')">🌙 Tünd</button>
+      <button class="theme-pill" id="pl" onclick="setTheme('light')">☀️ Açıq</button>
     </div>
+  </div>
 
-    <div class="books-grid" id="booksGrid"></div>
+  <div class="lib-hero">
+    <div class="lib-hero-text">
+      <h1>Kitabxana</h1>
+      <p>Şəxsi kitab kolleksiyası</p>
+    </div>
+    <div class="lib-stats">
+      <div class="stat-item"><div class="stat-num" id="sCnt">0</div><div class="stat-label">Kitab</div></div>
+      <div class="stat-item"><div class="stat-num" id="sDone">0</div><div class="stat-label">Tamamlanmış</div></div>
+      <div class="stat-item"><div class="stat-num" id="sMins">0d</div><div class="stat-label">Oxuma vaxtı</div></div>
+    </div>
+  </div>
+
+  <div class="lib-search-wrap">
+    <div class="search-wrap-inner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-s)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="lib-search" id="libSearch" type="text" placeholder="Kitab axtar..." oninput="renderLibrary()">
+    </div>
+    <button class="btn-primary" onclick="openAddModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Kitab əlavə et
+    </button>
+  </div>
+
+  <div class="books-grid" id="booksGrid"></div>
 </div>
 
-<div id="readerView" class="view">
-    <div class="topbar">
-        <button class="icon-btn" onclick="exitReader()">✕</button>
-        <div class="brand" id="readerTitle" style="font-size: 0.8rem; text-align: center;"></div>
-        <button class="icon-btn" onclick="toggleReaderSearch()">🔍</button>
-        <button class="icon-btn" onclick="toggleSidebar()">☰</button>
+<!-- ═══ READER ═══ -->
+<div id="v-reader" class="view">
+  <div class="reader-topbar">
+    <button class="icon-btn" onclick="closeReader()" title="Kitabxanaya qayıt (Esc)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+    </button>
+    <div class="divv"></div>
+    <div class="reader-title" id="readerTitle">—</div>
+    <div class="divv"></div>
+    <button class="icon-btn" id="btnSearch" onclick="toggleSearch()" title="Axtar (Ctrl+F)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+    <button class="icon-btn" id="btnBm" onclick="addBookmark()" title="Əlfəcin (Ctrl+B)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button class="icon-btn" id="btnSb" onclick="toggleSidebar()" title="Panel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+    </button>
+    <div class="divv"></div>
+    <div class="theme-toggle">
+      <button class="theme-pill on" id="rpd" onclick="setTheme('dark')">🌙</button>
+      <button class="theme-pill" id="rpl" onclick="setTheme('light')">☀️</button>
     </div>
+  </div>
 
-    <div class="reader-search" id="readerSearch">
-        <input type="text" class="main-input" id="rsInput" placeholder="Mətndə axtar..." oninput="searchInText()">
-        <div style="display: flex; gap: 5px;">
-            <button class="icon-btn" onclick="navSearch(-1)">↑</button>
-            <button class="icon-btn" onclick="navSearch(1)">↓</button>
+  <!-- Search bar -->
+  <div class="rsearch-bar" id="rsearchBar">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-s);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="rsi" id="rsi" placeholder="Mətndə axtar..." oninput="doSearch()" onkeydown="srchKey(event)">
+    <span class="rsc" id="rsc"></span>
+    <div class="rsnav">
+      <button onclick="srchNav(-1)" title="Əvvəlki">↑</button>
+      <button onclick="srchNav(1)" title="Növbəti">↓</button>
+    </div>
+    <button class="icon-btn" onclick="toggleSearch()" style="width:28px;height:28px;flex-shrink:0">✕</button>
+  </div>
+
+  <!-- Body -->
+  <div class="reader-body">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="stabs">
+        <button class="stab active" onclick="switchTab('bm',this)">Əlfəcin</button>
+        <button class="stab" onclick="switchTab('notes',this)">Qeydlər</button>
+        <button class="stab" onclick="switchTab('stats',this)">Məlumat</button>
+      </div>
+      <div class="sidebar-content">
+        <div class="sidebar-panel active" id="tab-bm"><div id="bmList"></div></div>
+        <div class="sidebar-panel" id="tab-notes"><div id="notesList"></div></div>
+        <div class="sidebar-panel" id="tab-stats">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="timer-box">
+            <div class="timer-time" id="timerDisp">00:00:00</div>
+            <div class="timer-lbl">Bu Sessiya</div>
+            <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">Başlat</button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <div class="reader-body">
-        <div class="sidebar" id="sidebar">
-            <div class="side-tabs">
-                <button class="tab-btn active" onclick="switchTab('bookmarks')">Əlfəcin</button>
-                <button class="tab-btn" onclick="switchTab('notes')">Qeydlər</button>
-                <button class="tab-btn" onclick="switchTab('stats')">Statistika</button>
-            </div>
-            <div class="side-content" id="sideContent">
-                </div>
+    <!-- Page -->
+    <div class="scroll-area" id="scrollArea">
+      <div class="page-wrap">
+        <div class="page-header">
+          <div class="ph-orn"><span class="ph-cross">✦</span></div>
+          <div class="ph-title" id="phTitle">—</div>
+          <div class="ph-author" id="phAuthor"></div>
         </div>
-
-        <div class="reader-main" id="readerMain" onscroll="handleReaderScroll()">
-            <div class="reader-content" id="readerContent" onmouseup="handleSelection()"></div>
+        <div class="page-inner">
+          <div class="reader-text" id="readerText"></div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="bottom-nav">
-        <button class="icon-btn" onclick="adjustFont(-2)">A-</button>
-        <button class="icon-btn" onclick="adjustFont(2)">A+</button>
-        <div style="width: 1px; height: 20px; background: var(--border);"></div>
-        <button class="icon-btn" onclick="addBookmark()">🔖</button>
-        <div id="readPercent" style="font-size: 0.7rem; color: var(--gold); font-weight: 600;">0%</div>
+  <!-- Bottom bar -->
+  <div class="reader-bottombar">
+    <div class="pbar-bg"><div class="pbar-fill" id="pbarFill"></div><div class="pbar-line" id="pbarLine"></div></div>
+    <div class="bbar-inner">
+      <div class="pct-disp" id="pctDisp">0%</div>
+      <div class="pos-disp" id="posDisp">Mövqe avtomatik saxlanılır</div>
+      <div class="font-wrap">
+        <button class="font-btn" onclick="changeFontSize(-1)" title="Şrifti kiçilt">A-</button>
+        <span class="font-size-disp" id="fontSizeDisp">20</span>
+        <button class="font-btn" onclick="changeFontSize(1)" title="Şrifti böyüt">A+</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<div id="addBookModal" class="modal">
-    <div class="modal-box">
-        <h2 style="font-family: 'Cinzel'; color: var(--gold); margin-bottom: 20px;">Yeni Kitab</h2>
-        <input type="text" id="nbTitle" class="main-input" placeholder="Kitabın adı">
-        <input type="text" id="nbAuthor" class="main-input" placeholder="Müəllif" style="margin-top: 10px;">
-        <textarea id="nbText" class="main-input" rows="10" placeholder="Mətni bura yapışdırın..." style="margin-top: 10px; resize: none;"></textarea>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-gold" style="flex: 1;" onclick="saveNewBook()">YADDA SAXLA</button>
-            <button class="btn-gold" style="flex: 1; background: var(--surface); color: var(--text);" onclick="closeModals()">LƏĞV ET</button>
-        </div>
+<!-- ═══ ADD BOOK MODAL ═══ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h2>✦ Yeni Kitab</h2>
+      <button class="icon-btn" onclick="closeAddModal()">✕</button>
     </div>
+    <div class="modal-body">
+      <div><label class="form-lbl">Kitabın adı *</label><input class="form-input" id="iTitle" type="text" placeholder="məs. Enok Kitabı"></div>
+      <div><label class="form-lbl">Müəllif</label><input class="form-input" id="iAuthor" type="text" placeholder="məs. Naməlum"></div>
+      <div>
+        <label class="form-lbl">Mətni yapışdır *</label>
+        <p class="form-hint">PDFdən kopyaladığın bütün mətni buraya Ctrl+V ilə yapışdır</p>
+        <textarea class="form-ta" id="iContent" placeholder="Kitabın bütün mətnini bura yapışdır..."></textarea>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closeAddModal()">Ləğv et</button>
+      <button class="btn-primary" onclick="saveBook()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Yadda saxla
+      </button>
+    </div>
+  </div>
 </div>
 
-<div id="noteModal" class="modal">
-    <div class="modal-box">
-        <h3 id="selTextPreview" style="font-style: italic; font-size: 0.9rem; margin-bottom: 15px; color: var(--text-s);"></h3>
-        <textarea id="noteInput" class="main-input" placeholder="Qeydiniz..." rows="4"></textarea>
-        <button class="btn-gold" style="width: 100%; margin-top: 15px;" onclick="saveNote()">QEYDİ SAXLA</button>
+<!-- ═══ NOTE MODAL ═══ -->
+<div class="note-modal" id="noteModal">
+  <div class="nm-box">
+    <div class="nm-header"><h3>📝 Qeyd əlavə et</h3><button class="icon-btn" onclick="closeNoteModal()">✕</button></div>
+    <div class="nm-quote" id="nmQuote"></div>
+    <textarea class="nm-ta" id="nmTa" placeholder="Qeydinizi yazın..."></textarea>
+    <div class="nm-footer">
+      <div class="hl-btns">
+        <span>Vurğu:</span>
+        <div class="hl-btn y" onclick="applyHL('y')" title="Sarı"></div>
+        <div class="hl-btn b" onclick="applyHL('b')" title="Mavi"></div>
+        <div class="hl-btn g" onclick="applyHL('g')" title="Yaşıl"></div>
+      </div>
+      <div class="nm-btns">
+        <button class="btn-sm btn-ghost2" onclick="closeNoteModal()">Bağla</button>
+        <button class="btn-sm btn-blue" onclick="saveNote()">Saxla</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    let db = { books: [], currentBook: null, settings: { theme: 'dark', fSize: 20 } };
-    let searchMatches = [];
-    let currentMatchIdx = -1;
-    let selectedText = "";
+// ═══════════════════════════════
+// STORAGE KEYS
+// ═══════════════════════════════
+const SK = {b:'lib_b3',p:'lib_p3',bm:'lib_bm3',n:'lib_n3',f:'lib_f3',t:'lib_t3',tm:'lib_tm3'};
+let books=[],progress={},bookmarks={},notes={},timers={};
+let curId=null, fontSize=20, sbOpen=true;
+let srchMatches=[],srchIdx=0;
+let timerOn=false,timerIv=null,timerStart=0,timerSecs=0;
+let pendingSel='',pendingRange=null;
+let scrollTimer;
 
-    // INITIALIZE
-    function init() {
-        const saved = localStorage.getItem('lib_db');
-        if (saved) db = JSON.parse(saved);
-        
-        document.documentElement.setAttribute('data-theme', db.settings.theme);
-        renderLibrary();
-        
-        // Oxuma vaxtını hesabla
-        setInterval(() => {
-            if(db.currentBook) {
-                db.books.find(b => b.id === db.currentBook).time = (db.books.find(b => b.id === db.currentBook).time || 0) + 1;
-                saveDB();
-            }
-        }, 1000);
-    }
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+function loadAll(){
+  books=load(SK.b,[]);progress=load(SK.p,{});bookmarks=load(SK.bm,{});
+  notes=load(SK.n,{});timers=load(SK.tm,{});fontSize=load(SK.f,20);
+}
 
-    function saveDB() { localStorage.setItem('lib_db', JSON.stringify(db)); }
+// ═══════════════════════════════
+// THEME
+// ═══════════════════════════════
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  save(SK.t,t);
+  ['pd','pl','rpd','rpl'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.toggle('on',id.includes(t==='dark'?'d':'l'));
+  });
+}
+function initTheme(){
+  const saved=load(SK.t,'dark');
+  setTheme(saved || 'dark');
+}
 
-    // LIBRARY FUNCTIONS
-    function renderLibrary() {
-        const grid = document.getElementById('booksGrid');
-        const query = document.getElementById('libSearch').value.toLowerCase();
-        const filtered = db.books.filter(b => b.title.toLowerCase().includes(query));
-        
-        grid.innerHTML = filtered.map(b => `
-            <div class="book-card" onclick="openBook('${b.id}')">
-                <div>
-                    <h3>${b.title}</h3>
-                    <div class="author">${b.author || 'Naməlum'}</div>
-                </div>
-                <div>
-                    <div class="progress-mini"><div class="progress-fill" style="width: ${b.progress || 0}%"></div></div>
-                    <div style="font-size: 0.6rem; margin-top: 5px; color: var(--gold);">${b.progress || 0}% oxunub</div>
-                </div>
-                <button onclick="deleteBook(event, '${b.id}')" style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: var(--red); cursor: pointer;">✕</button>
-            </div>
-        `).join('');
+// ═══════════════════════════════
+// TOAST
+// ═══════════════════════════════
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);
+}
 
-        document.getElementById('totalBooks').textContent = db.books.length;
-        const totalSecs = db.books.reduce((acc, b) => acc + (b.time || 0), 0);
-        document.getElementById('totalTime').textContent = Math.floor(totalSecs / 60) + 'd';
-    }
+// ═══════════════════════════════
+// HELPERS
+// ═══════════════════════════════
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function pct(id){const p=progress[id];if(!p||!p.total)return 0;return Math.min(100,Math.round((p.scrollTop/p.total)*100));}
+function wc(text){return text?text.trim().split(/\s+/).filter(Boolean).length:0;}
+function fmtT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
 
-    function openBook(id) {
-        db.currentBook = id;
-        const book = db.books.find(b => b.id === id);
-        document.getElementById('readerTitle').textContent = book.title;
-        document.getElementById('readerContent').textContent = book.text;
-        document.getElementById('readerContent').style.fontSize = db.settings.fSize + 'px';
-        
-        document.getElementById('libView').classList.remove('active');
-        document.getElementById('readerView').classList.add('active');
-        
-        const scrollPos = book.scrollPos || 0;
-        setTimeout(() => { document.getElementById('readerMain').scrollTop = scrollPos; }, 10);
-        switchTab('bookmarks');
-    }
+// ═══════════════════════════════
+// LIBRARY
+// ═══════════════════════════════
+function renderLibrary(){
+  const grid=document.getElementById('booksGrid');
+  const q=(document.getElementById('libSearch').value||'').toLowerCase();
+  const filtered=books.filter(b=>b.title.toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q));
+  grid.innerHTML='';
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty-state"><span class="ei">📜</span><p>${books.length?'Nəticə tapılmadı.':'Hələ kitab yoxdur. Yuxarıdakı düyməyə bas.'}</p></div>`;
+    updateStats();return;
+  }
+  filtered.forEach((bk,i)=>{
+    const p=pct(bk.id),tm=timers[bk.id]||0,mins=Math.round(tm/60);
+    const card=document.createElement('div');
+    card.className='book-card';card.style.animationDelay=(i*.045)+'s';
+    card.onclick=()=>openReader(bk.id);
+    card.innerHTML=`<div class="book-spine">
+      <div><div class="bk-ornament"><div class="bk-diamond"></div></div><div class="bk-title">${esc(bk.title)}</div>${bk.author?`<div class="bk-author">${esc(bk.author)}</div>`:''}</div>
+      <div class="bk-pct-row"><div class="bk-pct-bar"><div class="bk-pct-fill" style="width:${p}%"></div></div>
+      <div class="bk-pct-lbl"><span>${p}% oxunub</span><span>${mins>0?mins+'d':''}</span></div></div>
+      ${p===100?'<div class="bk-badge">✓ Tamamlandı</div>':''}
+    </div>
+    <button class="bk-del" onclick="delBook(event,'${bk.id}')">✕</button>`;
+    grid.appendChild(card);
+  });
+  updateStats();
+}
 
-    function exitReader() {
-        db.currentBook = null;
-        document.getElementById('readerView').classList.remove('active');
-        document.getElementById('libView').classList.add('active');
-        renderLibrary();
-    }
+function updateStats(){
+  document.getElementById('sCnt').textContent=books.length;
+  document.getElementById('sDone').textContent=books.filter(b=>pct(b.id)===100).length;
+  const tot=Object.values(timers).reduce((a,b)=>a+b,0);
+  const h=Math.floor(tot/3600),m=Math.floor((tot%3600)/60);
+  document.getElementById('sMins').textContent=h>0?h+'s '+m+'d':m+'d';
+}
 
-    // READER FUNCTIONS
-    function handleReaderScroll() {
-        const el = document.getElementById('readerMain');
-        const book = db.books.find(b => b.id === db.currentBook);
-        if(!book) return;
+function delBook(e,id){
+  e.stopPropagation();
+  if(!confirm('Bu kitabı silmək istəyirsiniz?'))return;
+  books=books.filter(b=>b.id!==id);
+  [progress,bookmarks,notes,timers].forEach(obj=>delete obj[id]);
+  saveAllData();
+  renderLibrary();toast('Kitab silindi');
+}
 
-        const pct = Math.floor((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100);
-        book.progress = pct;
-        book.scrollPos = el.scrollTop;
-        document.getElementById('readPercent').textContent = pct + '%';
-        saveDB();
-    }
+// ═══════════════════════════════
+// ADD BOOK
+// ═══════════════════════════════
+function openAddModal(){
+  ['iTitle','iAuthor','iContent'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(()=>document.getElementById('iTitle').focus(),100);
+}
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
+function saveBook(){
+  const title=document.getElementById('iTitle').value.trim();
+  const author=document.getElementById('iAuthor').value.trim();
+  const content=document.getElementById('iContent').value.trim();
+  if(!title){toast('Kitabın adını yazın');return;}
+  if(!content){toast('Kitabın mətnini yapışdırın');return;}
+  const bk={id:'b_'+Date.now(),title,author,content,added:Date.now()};
+  books.unshift(bk);bookmarks[bk.id]=[];notes[bk.id]=[];
+  save(SK.b,books);save(SK.bm,bookmarks);save(SK.n,notes);
+  closeAddModal();renderLibrary();toast('✦ Kitab əlavə edildi');
+}
 
-    function adjustFont(n) {
-        db.settings.fSize += n;
-        document.getElementById('readerContent').style.fontSize = db.settings.fSize + 'px';
-        saveDB();
-    }
+// ═══════════════════════════════
+// READER
+// ═══════════════════════════════
+function openReader(id){
+  const bk=books.find(b=>b.id===id);if(!bk)return;
+  curId=id;
+  if(!bookmarks[id])bookmarks[id]=[];
+  if(!notes[id])notes[id]=[];
+  if(!timers[id])timers[id]=0;
 
-    function toggleTheme() {
-        db.settings.theme = db.settings.theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', db.settings.theme);
-        saveDB();
-    }
+  document.getElementById('readerTitle').textContent=bk.title;
+  document.getElementById('phTitle').textContent=bk.title;
+  document.getElementById('phAuthor').textContent=bk.author||'';
 
-    // SIDEBAR & TABS
-    function switchTab(tab) {
-        const content = document.getElementById('sideContent');
-        const book = db.books.find(b => b.id === db.currentBook);
-        
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(tab.substring(0,3))));
+  const rt=document.getElementById('readerText');
+  rt.textContent=bk.content;
+  rt.style.fontSize=fontSize+'px';
+  document.getElementById('fontSizeDisp').textContent=fontSize;
 
-        if(tab === 'bookmarks') {
-            content.innerHTML = (book.bookmarks || []).map(bm => `
-                <div class="note-item" onclick="jumpTo(${bm.pos})">
-                    <div style="color: var(--gold); font-size: 0.7rem;">Səhifə tərəqqisi: ${bm.pct}%</div>
-                    <div style="margin-top: 5px;">${bm.time}</div>
-                </div>
-            `).join('') || 'Əlfəcin yoxdur.';
-        } else if(tab === 'notes') {
-            content.innerHTML = (book.notes || []).map(n => `
-                <div class="note-item">
-                    <div style="font-style: italic; color: var(--text-s); border-left: 2px solid var(--gold); padding-left: 10px; margin-bottom: 8px;">"${n.quote}"</div>
-                    <div>${n.comment}</div>
-                </div>
-            `).join('') || 'Qeyd yoxdur. Mətni seçərək qeyd əlavə edin.';
-        } else if(tab === 'stats') {
-            const wpm = 200;
-            const words = book.text.split(/\s+/).length;
-            content.innerHTML = `
-                <div class="stat-box">
-                    <span class="stat-val">${words}</span><span class="stat-lbl">Söz sayı</span>
-                    <br>
-                    <span class="stat-val">${Math.ceil(words / wpm)} dəq</span><span class="stat-lbl">Təxmini oxuma</span>
-                    <br>
-                    <span class="stat-val">${Math.floor((book.time || 0) / 60)}d</span><span class="stat-lbl">Sərf edilən vaxt</span>
-                </div>
-            `;
-        }
-    }
+  document.getElementById('v-library').classList.remove('active');
+  document.getElementById('v-reader').classList.add('active');
 
-    function addBookmark() {
-        const book = db.books.find(b => b.id === db.currentBook);
-        if(!book.bookmarks) book.bookmarks = [];
-        const el = document.getElementById('readerMain');
-        book.bookmarks.push({
-            pos: el.scrollTop,
-            pct: Math.floor((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100),
-            time: new Date().toLocaleTimeString()
-        });
-        saveDB();
-        switchTab('bookmarks');
-    }
+  const sa=document.getElementById('scrollArea');
+  const pr=progress[id];
+  requestAnimationFrame(()=>{
+    sa.scrollTop=pr?pr.scrollTop:0;
+    updatePUI();
+  });
+  sa.addEventListener('scroll',onScroll);
+  rt.addEventListener('mouseup',onSel);
+  rt.addEventListener('touchend', onSel);
 
-    function jumpTo(pos) { document.getElementById('readerMain').scrollTop = pos; }
+  timerSecs=0;updateTimerDisp();
+  renderBM();renderNotes();renderStats();clearSearch();
+}
 
-    // SELECTION & NOTES
-    function handleSelection() {
-        const sel = window.getSelection().toString().trim();
-        if(sel.length > 3) {
-            selectedText = sel;
-            document.getElementById('selTextPreview').textContent = `"${sel.substring(0, 100)}..."`;
-            showModal('noteModal');
-        }
-    }
+function closeReader(){
+  saveProg();stopTimer();
+  const sa=document.getElementById('scrollArea');
+  sa.removeEventListener('scroll',onScroll);
+  document.getElementById('readerText').removeEventListener('mouseup',onSel);
+  document.getElementById('readerText').removeEventListener('touchend', onSel);
+  clearSearch();curId=null;
+  document.getElementById('v-reader').classList.remove('active');
+  document.getElementById('v-library').classList.add('active');
+  renderLibrary();
+}
 
-    function saveNote() {
-        const comment = document.getElementById('noteInput').value;
-        const book = db.books.find(b => b.id === db.currentBook);
-        if(!book.notes) book.notes = [];
-        book.notes.push({ quote: selectedText, comment: comment });
-        saveDB();
-        closeModals();
-        switchTab('notes');
-        window.getSelection().removeAllRanges();
-    }
+function onScroll(){updatePUI();clearTimeout(scrollTimer);scrollTimer=setTimeout(saveProg,600);}
 
-    // SEARCH IN TEXT (Professional & Smooth)
-    function toggleReaderSearch() {
-        const rs = document.getElementById('readerSearch');
-        rs.classList.toggle('active');
-        if(rs.classList.contains('active')) document.getElementById('rsInput').focus();
-        else clearSearch();
-    }
+function saveProg(){
+  if(!curId)return;
+  const sa=document.getElementById('scrollArea');
+  progress[curId]={scrollTop:sa.scrollTop,total:sa.scrollHeight-sa.clientHeight};
+  save(SK.p,progress);
+}
 
-    function searchInText() {
-        const q = document.getElementById('rsInput').value.toLowerCase();
-        const content = document.getElementById('readerContent');
-        const book = db.books.find(b => b.id === db.currentBook);
+function saveAllData(){
+  save(SK.b,books);save(SK.p,progress);save(SK.bm,bookmarks);
+  save(SK.n,notes);save(SK.tm,timers);save(SK.f,fontSize);
+}
 
-        if(q.length < 2) { content.textContent = book.text; return; }
+function updatePUI(){
+  const sa=document.getElementById('scrollArea');
+  const tot=sa.scrollHeight-sa.clientHeight;
+  const p=tot>0?Math.min(100,Math.round((sa.scrollTop/tot)*100)):0;
+  const w=p+'%';
+  document.getElementById('pbarFill').style.width=w;
+  document.getElementById('pbarLine').style.width=w;
+  document.getElementById('pctDisp').textContent=p+'%';
+  document.getElementById('posDisp').textContent=p+'% — mövqe yadda saxlanılır';
+}
 
-        const regex = new RegExp(`(${q})`, 'gi');
-        content.innerHTML = book.text.replace(regex, '<mark>$1</mark>');
-        searchMatches = Array.from(content.querySelectorAll('mark'));
-        currentMatchIdx = -1;
-        navSearch(1);
-    }
+// ═══════════════════════════════
+// FONT SIZE CONTROL
+// ═══════════════════════════════
+function changeFontSize(delta) {
+  fontSize = Math.min(28, Math.max(14, fontSize + delta));
+  document.getElementById('readerText').style.fontSize = fontSize + 'px';
+  document.getElementById('fontSizeDisp').textContent = fontSize;
+  save(SK.f, fontSize);
+  if(delta > 0) toast('Şrift böyüdüldü');
+  else toast('Şrift kiçildi');
+}
 
-    function navSearch(dir) {
-        if(!searchMatches.length) return;
-        searchMatches.forEach(m => m.classList.remove('current'));
-        currentMatchIdx = (currentMatchIdx + dir + searchMatches.length) % searchMatches.length;
-        const target = searchMatches[currentMatchIdx];
-        target.classList.add('current');
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+function toggleSidebar(){
+  sbOpen=!sbOpen;
+  document.getElementById('sidebar').classList.toggle('closed',!sbOpen);
+  document.getElementById('btnSb').classList.toggle('active',sbOpen);
+}
 
-    function clearSearch() { 
-        const book = db.books.find(b => b.id === db.currentBook);
-        if(book) document.getElementById('readerContent').textContent = book.text;
-    }
+function switchTab(name,el){
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='stats')renderStats();
+}
 
-    // MODAL HELPERS
-    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModals() { 
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-        document.getElementById('nbTitle').value = "";
-        document.getElementById('nbText').value = "";
-        document.getElementById('noteInput').value = "";
-    }
+// ═══════════════════════════════
+// BOOKMARKS
+// ═══════════════════════════════
+function addBookmark(){
+  if(!curId)return;
+  const sa=document.getElementById('scrollArea');
+  const tot=sa.scrollHeight-sa.clientHeight;
+  const p=tot>0?Math.round((sa.scrollTop/tot)*100):0;
+  const text=document.getElementById('readerText').textContent||'';
+  const ci=Math.floor((sa.scrollTop/Math.max(1,sa.scrollHeight))*text.length);
+  const prev=text.slice(Math.max(0,ci-10),ci+130).replace(/\s+/g,' ').trim();
+  const bm={id:'bm_'+Date.now(),scrollTop:sa.scrollTop,pct:p,preview:prev||'—',date:new Date().toLocaleDateString('az-AZ')};
+  bookmarks[curId].push(bm);save(SK.bm,bookmarks);renderBM();toast('🔖 Əlfəcin əlavə edildi');
+}
 
-    function saveNewBook() {
-        const title = document.getElementById('nbTitle').value;
-        const author = document.getElementById('nbAuthor').value;
-        const text = document.getElementById('nbText').value;
-        if(!title || !text) return alert("Başlıq və mətni doldurun!");
+function renderBM(){
+  const list=document.getElementById('bmList');
+  const bms=bookmarks[curId]||[];
+  if(!bms.length){list.innerHTML='<div class="sb-empty">Əlfəcin yoxdur.<br>🔖 düyməsinə bas.</div>';return;}
+  list.innerHTML=bms.slice().reverse().map(b=>`
+    <div class="bm-item" onclick="gotoBM('${b.id}')">
+      <div class="bm-preview">${esc(b.preview)}</div>
+      <div class="bm-meta"><span>${b.pct}% — ${b.date}</span><button class="bm-del" onclick="delBM(event,'${b.id}')">✕</button></div>
+    </div>`).join('');
+}
 
-        db.books.push({ id: 'b' + Date.now(), title, author, text, time: 0, progress: 0, bookmarks: [], notes: [] });
-        saveDB();
-        closeModals();
-        renderLibrary();
-    }
+function gotoBM(id){
+  const bm=(bookmarks[curId]||[]).find(b=>b.id===id);
+  if(!bm)return;
+  document.getElementById('scrollArea').scrollTo({top:bm.scrollTop,behavior:'smooth'});
+  toast('Əlfəcinə getdi');
+}
 
-    function deleteBook(e, id) {
-        e.stopPropagation();
-        if(confirm('Bu kitabı silmək istəyirsiniz?')) {
-            db.books = db.books.filter(b => b.id !== id);
-            saveDB();
-            renderLibrary();
-        }
-    }
+function delBM(e,id){
+  e.stopPropagation();
+  bookmarks[curId]=(bookmarks[curId]||[]).filter(b=>b.id!==id);
+  save(SK.bm,bookmarks);renderBM();
+}
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+// ═══════════════════════════════
+// NOTES & HIGHLIGHTS
+// ═══════════════════════════════
+function onSel(e){
+  setTimeout(() => {
+    const sel=window.getSelection();
+    if(!sel||sel.isCollapsed||!sel.toString().trim())return;
+    pendingSel=sel.toString().trim().slice(0,500);
+    pendingRange=sel.getRangeAt(0).cloneRange();
+    openNoteModal();
+  }, 10);
+}
 
-    window.onload = init;
+function openNoteModal(){
+  document.getElementById('nmQuote').textContent=pendingSel?'"'+pendingSel.slice(0,200)+'…"':'';
+  document.getElementById('nmTa').value='';
+  document.getElementById('noteModal').classList.add('open');
+  setTimeout(()=>document.getElementById('nmTa').focus(),80);
+}
+function closeNoteModal(){document.getElementById('noteModal').classList.remove('open');pendingRange=null;pendingSel='';}
+
+function applyHL(color){
+  if(!pendingRange)return;
+  const mark=document.createElement('mark');
+  mark.className='hl-'+color;
+  try{
+    pendingRange.surroundContents(mark);
+    window.getSelection().removeAllRanges();
+    saveCurrentContent();
+    toast('Vurğu əlavə edildi');
+  }catch(e){
+    toast('Vurğu əlavə edilə bilmədi');
+  }
+  pendingRange=null;
+}
+
+function saveCurrentContent() {
+  if(!curId) return;
+  const bk = books.find(b => b.id === curId);
+  if(!bk) return;
+  const rt = document.getElementById('readerText');
+  bk.content = rt.innerHTML;
+  save(SK.b, books);
+}
+
+function saveNote(){
+  const text=document.getElementById('nmTa').value.trim();
+  if(!text){toast('Qeyd mətni yazın');return;}
+  const note={id:'n_'+Date.now(),text,context:pendingSel?pendingSel.slice(0,200):'',date:new Date().toLocaleDateString('az-AZ')};
+  notes[curId].push(note);save(SK.n,notes);closeNoteModal();renderNotes();toast('📝 Qeyd saxlanıldı');
+}
+
+function renderNotes(){
+  const list=document.getElementById('notesList');
+  const ns=notes[curId]||[];
+  if(!ns.length){list.innerHTML='<div class="sb-empty">Qeyd yoxdur.<br>Mətni seç, qeyd əlavə et.</div>';return;}
+  list.innerHTML=ns.slice().reverse().map(n=>`
+    <div class="note-item">
+      ${n.context?`<div class="note-ctx">"${esc(n.context.slice(0,80))}…"</div>`:''}
+      <div class="note-prev">${esc(n.text)}</div>
+      <div class="note-meta2"><span>${n.date}</span><button class="bm-del" onclick="delNote('${n.id}')">✕</button></div>
+    </div>`).join('');
+}
+
+function delNote(id){
+  notes[curId]=(notes[curId]||[]).filter(n=>n.id!==id);
+  save(SK.n,notes);renderNotes();
+}
+
+// ═══════════════════════════════
+// STATS
+// ═══════════════════════════════
+function renderStats(){
+  if(!curId)return;
+  const bk=books.find(b=>b.id===curId);if(!bk)return;
+  const w=wc(bk.content),p=pct(curId);
+  const bmC=(bookmarks[curId]||[]).length,nC=(notes[curId]||[]).length;
+  const tot=timers[curId]||0,rMins=Math.round(tot/60);
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card"><span class="sc-num">${w.toLocaleString()}</span><span class="sc-lbl">Söz</span></div>
+    <div class="stat-card"><span class="sc-num">${p}%</span><span class="sc-lbl">Tamamlandı</span></div>
+    <div class="stat-card"><span class="sc-num">${bmC}</span><span class="sc-lbl">Əlfəcin</span></div>
+    <div class="stat-card"><span class="sc-num">${nC}</span><span class="sc-lbl">Qeyd</span></div>
+    <div class="stat-card"><span class="sc-num">${rMins}</span><span class="sc-lbl">Dəq (ümumi)</span></div>
+    <div class="stat-card"><span class="sc-num">${Math.ceil(w/200)}</span><span class="sc-lbl">Dəq (oxuma)</span></div>`;
+}
+
+// ═══════════════════════════════
+// TIMER
+// ═══════════════════════════════
+function toggleTimer(){timerOn?stopTimer():startTimer();}
+function startTimer(){
+  timerOn=true;timerStart=Date.now()-timerSecs*1000;
+  document.getElementById('timerBtn').textContent='Dayandır';
+  timerIv=setInterval(()=>{
+    timerSecs=Math.floor((Date.now()-timerStart)/1000);
+    updateTimerDisp();
+    if(curId){timers[curId]=(timers[curId]||0)+1;save(SK.tm,timers);}
+  },1000);
+}
+function stopTimer(){
+  timerOn=false;clearInterval(timerIv);
+  const b=document.getElementById('timerBtn');if(b)b.textContent='Başlat';
+}
+function updateTimerDisp(){const el=document.getElementById('timerDisp');if(el)el.textContent=fmtT(timerSecs);}
+
+// ═══════════════════════════════
+// SEARCH
+// ═══════════════════════════════
+function toggleSearch(){
+  const bar=document.getElementById('rsearchBar'),btn=document.getElementById('btnSearch');
+  const open=bar.classList.toggle('open');btn.classList.toggle('active',open);
+  if(open)setTimeout(()=>document.getElementById('rsi').focus(),70);
+  else clearSearch();
+}
+
+function clearSearch(){
+  document.getElementById('rsi').value='';document.getElementById('rsc').textContent='';
+  const rt=document.getElementById('readerText');
+  rt.querySelectorAll('mark.sh').forEach(m=>{
+    const p=m.parentNode;
+    if(p) p.replaceChild(document.createTextNode(m.textContent),m);
+    if(p) p.normalize();
+  });
+  srchMatches=[];srchIdx=0;
+}
+
+function doSearch(){
+  const rt=document.getElementById('readerText'),q=document.getElementById('rsi').value.trim();
+  rt.querySelectorAll('mark.sh').forEach(m=>{
+    const p=m.parentNode;
+    if(p) p.replaceChild(document.createTextNode(m.textContent),m);
+    if(p) p.normalize();
+  });
+  srchMatches=[];srchIdx=0;
+  if(!q||q.length<2){document.getElementById('rsc').textContent='';return;}
+  const raw=rt.textContent;
+  const regex=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+  rt.innerHTML=raw.replace(regex,m=>`<mark class="sh">${esc(m)}</mark>`);
+  srchMatches=Array.from(rt.querySelectorAll('mark.sh'));
+  document.getElementById('rsc').textContent=srchMatches.length?`1/${srchMatches.length}`:'Tapılmadı';
+  if(srchMatches.length){jumpTo(0);rt.addEventListener('mouseup',onSel);}
+}
+
+function srchNav(d){
+  if(!srchMatches.length)return;
+  srchIdx=(srchIdx+d+srchMatches.length)%srchMatches.length;jumpTo(srchIdx);
+}
+
+function jumpTo(i){
+  srchMatches.forEach((m,idx)=>m.classList.toggle('cur',idx===i));
+  const el=srchMatches[i];if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  document.getElementById('rsc').textContent=`${i+1}/${srchMatches.length}`;
+}
+
+function srchKey(e){
+  if(e.key==='Enter'){srchNav(e.shiftKey?-1:1);e.preventDefault();}
+  if(e.key==='Escape')toggleSearch();
+}
+
+// ═══════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════
+document.addEventListener('keydown',e=>{
+  const inReader=document.getElementById('v-reader').classList.contains('active');
+  if(e.ctrlKey&&e.key==='f'&&inReader){e.preventDefault();const bar=document.getElementById('rsearchBar');if(!bar.classList.contains('open'))toggleSearch();else document.getElementById('rsi').focus();return;}
+  if(e.ctrlKey&&e.key==='b'&&inReader){e.preventDefault();addBookmark();return;}
+  if(e.key==='Escape'){
+    if(document.getElementById('noteModal').classList.contains('open')){closeNoteModal();return;}
+    if(document.getElementById('addModal').classList.contains('open')){closeAddModal();return;}
+    if(document.getElementById('rsearchBar').classList.contains('open')){toggleSearch();return;}
+    if(inReader)closeReader();
+  }
+});
+
+// ═══════════════════════════════
+// PREVENT ZOOM (pinch zoom disable)
+// ═══════════════════════════════
+document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+document.addEventListener('touchmove', function(e) {
+  if (e.scale !== 1 && e.target.closest('.scroll-area')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+loadAll();initTheme();renderLibrary();
 </script>
 </body>
 </html>
