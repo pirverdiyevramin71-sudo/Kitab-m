@@ -3,279 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Professional Kitabxanam</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Cinzel:wght@500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Elite Kitabxanam v3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tr: 0.3s ease;
-            /* Dark Theme (Şəkildəki kimi tünd qara) */
+            --tr: 0.25s cubic-bezier(.4,0,.2,1);
             --bg: #000000;
-            --surface: #121212;
-            --text: #e0e0e0;
+            --surface: #0a0a0a;
+            --card: #111111;
+            --card-hover: #161616;
+            --border: #1a1a1a;
+            --border-soft: #222222;
             --gold: #c8a96e;
-            --accent: #b8962a;
-            --border: #222;
+            --gold-glow: rgba(200,169,110,0.15);
+            --text: #e0e0e0;
+            --text-s: #a0a0a0;
+            --text-m: #666666;
+            --blue: #5b9bd5;
+            --red: #e74c3c;
         }
 
         [data-theme="light"] {
-            --bg: #ffffff;
-            --surface: #f5f5f5;
-            --text: #1a1a1a;
+            --bg: #fcfaf5; --surface: #f2eee3; --card: #ffffff;
+            --border: #e0d9c5; --text: #1a1a1a; --text-s: #4a4a4a;
             --gold: #8c7341;
-            --border: #ddd;
-        }
-
-        [data-theme="sepia"] {
-            --bg: #f4ecd8;
-            --surface: #e8dfc4;
-            --text: #5b4636;
-            --gold: #8c7341;
-            --border: #d3c7a7;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; transition: background var(--tr); }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+        .view { display: none; min-height: 100vh; flex-direction: column; }
+        .view.active { display: flex; }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            height: 60px; background: var(--bg); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 20px; gap: 15px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); letter-spacing: 3px; flex: 1; }
+
+        /* ── LIBRARY ── */
+        .hero { padding: 40px 20px; background: linear-gradient(to bottom, var(--surface), var(--bg)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold); margin-bottom: 10px; }
         
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: background var(--tr);
+        .stats-row { display: flex; gap: 30px; margin-top: 20px; }
+        .stat-box { display: flex; flex-direction: column; }
+        .stat-val { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--gold); }
+        .stat-lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--text-m); letter-spacing: 1px; }
+
+        .search-area { padding: 15px 20px; display: flex; gap: 10px; }
+        .input-wrap { flex: 1; position: relative; }
+        .main-input {
+            width: 100%; background: var(--card); border: 1px solid var(--border);
+            color: var(--text); padding: 12px 15px; border-radius: 8px; outline: none;
+            font-size: 16px; transition: var(--tr);
+        }
+        .main-input:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+
+        .btn-gold {
+            background: var(--gold); color: black; border: none; padding: 0 20px;
+            border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.8rem;
+            font-weight: 600; cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 8px;
+        }
+        .btn-gold:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
+        .book-card {
+            background: var(--card); border: 1px solid var(--border); padding: 15px;
+            border-radius: 4px; cursor: pointer; transition: var(--tr); position: relative;
+            display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 2/3;
+        }
+        .book-card:hover { border-color: var(--gold); background: var(--card-hover); transform: translateY(-5px); }
+        .book-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; line-height: 1.2; }
+        .book-card .author { font-size: 0.75rem; color: var(--text-m); margin-top: 5px; }
+        .progress-mini { height: 2px; background: var(--border); margin-top: 15px; position: relative; }
+        .progress-fill { height: 100%; background: var(--gold); transition: width 0.5s; }
+
+        /* ── READER ── */
+        .reader-body { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
+        .sidebar {
+            width: 300px; background: var(--surface); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; transition: transform 0.3s;
+        }
+        .sidebar.hidden { display: none; }
+        .side-tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .tab-btn {
+            flex: 1; padding: 15px; background: none; border: none; color: var(--text-m);
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase; cursor: pointer;
+        }
+        .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+
+        .side-content { flex: 1; overflow-y: auto; padding: 15px; }
+
+        .reader-main { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+        .reader-content {
+            max-width: 700px; margin: 0 auto; padding: 60px 25px 150px;
+            font-family: 'Cormorant Garamond', serif; font-size: 1.3rem;
+            line-height: 1.8; text-align: justify; white-space: pre-wrap;
         }
 
-        /* ─── PROFESSIONAL OXUCU REJİMİ ─── */
-        .reader-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
+        /* SEARCH BAR IN READER */
+        .reader-search {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 10px 20px; display: none; align-items: center; gap: 10px;
         }
+        .reader-search.active { display: flex; }
 
-        .header-nav {
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            padding: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
+        /* BOTTOM BAR */
+        .bottom-nav {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: var(--card); border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 50px; display: flex; gap: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; align-items: center;
         }
+        .icon-btn { background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
+        .icon-btn:hover { color: var(--gold); }
 
-        .book-title {
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: var(--gold);
-            text-transform: uppercase;
+        /* HIGHLIGHTS & NOTES */
+        mark { background: var(--gold); color: black; border-radius: 2px; cursor: pointer; }
+        mark.current { outline: 2px solid white; box-shadow: 0 0 15px var(--gold); }
+        .note-item { background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.85rem; }
+
+        /* MODALS */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
         }
+        .modal-box { background: var(--card); width: 100%; max-width: 600px; border: 1px solid var(--border); padding: 30px; border-radius: 8px; }
 
-        /* ─── AXTARIŞ SAHƏSİ (Yaxınlaşmanı həll edən hissə) ─── */
-        .search-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-        }
-
-        .search-box input {
-            background: transparent;
-            border: none;
-            color: var(--text);
-            width: 100%;
-            /* Mobil fokus zoom-un qarşısını almaq üçün minimum 16px */
-            font-size: 16px; 
-            outline: none;
-        }
-
-        /* ─── OXU MƏTNİ ─── */
-        #readerText {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.25rem; /* Default */
-            text-align: justify;
-            margin-top: 30px;
-            white-space: pre-wrap;
-            transition: font-size 0.2s ease;
-        }
-
-        /* Ayə nömrələri kimi xırda detallar üçün stil */
-        .verse-num {
-            font-size: 0.6em;
-            vertical-align: super;
-            color: var(--gold);
-            margin-right: 5px;
-        }
-
-        /* ─── İDARƏETMƏ PANELİ (Aşağıda) ─── */
-        .bottom-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--surface);
-            padding: 10px 20px;
-            border-radius: 30px;
-            display: flex;
-            gap: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            z-index: 1000;
-        }
-
-        .control-btn {
-            background: none;
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            transition: var(--tr);
-        }
-
-        .control-btn:hover { color: var(--gold); }
-
-        .font-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-right: 1px solid var(--border);
-            padding-right: 15px;
-        }
-
-        .theme-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 1px solid var(--border);
-        }
-
-        mark {
-            background: var(--gold);
-            color: black;
-            border-radius: 2px;
-        }
-
-        /* ─── MOBİL UYĞUNLUQ ─── */
-        @media (max-width: 600px) {
-            #readerText { font-size: 1.1rem; padding-bottom: 100px; }
-            .book-title { font-size: 0.7rem; }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; inset: 0; z-index: 1000; width: 100%; transform: translateX(-100%); display: flex !important; }
+            .sidebar.active { transform: translateX(0); }
+            .reader-content { font-size: 1.15rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="reader-container">
-    <header class="header-nav">
-        <button class="control-btn" onclick="goBack()">✕</button>
-        <div class="book-title" id="bookTitle">Allahın Musaya verdiyi əlamətlər</div>
-        <button class="control-btn" onclick="toggleSearch()">🔍</button>
-    </header>
-
-    <div id="searchArea" style="display: none;">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Mətndə axtarın..." oninput="searchText()">
+<div id="libView" class="view active">
+    <div class="topbar">
+        <div class="brand">✦ Kitabxanam</div>
+        <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+    </div>
+    
+    <div class="hero">
+        <h1>Mənim Rafım</h1>
+        <div class="stats-row">
+            <div class="stat-box"><span class="stat-val" id="totalBooks">0</span><span class="stat-lbl">Kitab</span></div>
+            <div class="stat-box"><span class="stat-val" id="totalTime">0d</span><span class="stat-lbl">Oxuma</span></div>
         </div>
     </div>
 
-    <main id="readerText">
-        <span class="verse-num">1</span> Musa belə cavab verdi: «Bəlkə onlar mənə inanmayaraq sözümə qulaq asmayıb “Rəbb sənə görünməyib” deyəcəklər?» 
-        <span class="verse-num">2</span> Rəbb Musaya dedi: «Sənin əlindəki nədir?» O dedi: «Əsa». <span class="verse-num">3</span> Rəbb dedi: «Onu yerə at». Musa onu yerə atdı və əsa ilan oldu. 
-    </main>
+    <div class="search-area">
+        <div class="input-wrap">
+            <input type="text" class="main-input" id="libSearch" placeholder="Kitab axtar..." oninput="renderLibrary()">
+        </div>
+        <button class="btn-gold" onclick="showModal('addBookModal')">➕ ƏLAVƏ ET</button>
+    </div>
+
+    <div class="books-grid" id="booksGrid"></div>
 </div>
 
-<div class="bottom-controls">
-    <div class="font-controls">
-        <button class="control-btn" onclick="changeFontSize(-2)">A-</button>
-        <button class="control-btn" onclick="changeFontSize(2)">A+</button>
-    </div>
-    
-    <div class="theme-dots">
-        <div class="dot" style="background: #ffffff;" onclick="setTheme('light')"></div>
-        <div class="dot" style="background: #f4ecd8;" onclick="setTheme('sepia')"></div>
-        <div class="dot" style="background: #121212;" onclick="setTheme('dark')"></div>
+<div id="readerView" class="view">
+    <div class="topbar">
+        <button class="icon-btn" onclick="exitReader()">✕</button>
+        <div class="brand" id="readerTitle" style="font-size: 0.8rem; text-align: center;"></div>
+        <button class="icon-btn" onclick="toggleReaderSearch()">🔍</button>
+        <button class="icon-btn" onclick="toggleSidebar()">☰</button>
     </div>
 
-    <button class="control-btn" onclick="toggleFullScreen()">⛶</button>
+    <div class="reader-search" id="readerSearch">
+        <input type="text" class="main-input" id="rsInput" placeholder="Mətndə axtar..." oninput="searchInText()">
+        <div style="display: flex; gap: 5px;">
+            <button class="icon-btn" onclick="navSearch(-1)">↑</button>
+            <button class="icon-btn" onclick="navSearch(1)">↓</button>
+        </div>
+    </div>
+
+    <div class="reader-body">
+        <div class="sidebar" id="sidebar">
+            <div class="side-tabs">
+                <button class="tab-btn active" onclick="switchTab('bookmarks')">Əlfəcin</button>
+                <button class="tab-btn" onclick="switchTab('notes')">Qeydlər</button>
+                <button class="tab-btn" onclick="switchTab('stats')">Statistika</button>
+            </div>
+            <div class="side-content" id="sideContent">
+                </div>
+        </div>
+
+        <div class="reader-main" id="readerMain" onscroll="handleReaderScroll()">
+            <div class="reader-content" id="readerContent" onmouseup="handleSelection()"></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="icon-btn" onclick="adjustFont(-2)">A-</button>
+        <button class="icon-btn" onclick="adjustFont(2)">A+</button>
+        <div style="width: 1px; height: 20px; background: var(--border);"></div>
+        <button class="icon-btn" onclick="addBookmark()">🔖</button>
+        <div id="readPercent" style="font-size: 0.7rem; color: var(--gold); font-weight: 600;">0%</div>
+    </div>
+</div>
+
+<div id="addBookModal" class="modal">
+    <div class="modal-box">
+        <h2 style="font-family: 'Cinzel'; color: var(--gold); margin-bottom: 20px;">Yeni Kitab</h2>
+        <input type="text" id="nbTitle" class="main-input" placeholder="Kitabın adı">
+        <input type="text" id="nbAuthor" class="main-input" placeholder="Müəllif" style="margin-top: 10px;">
+        <textarea id="nbText" class="main-input" rows="10" placeholder="Mətni bura yapışdırın..." style="margin-top: 10px; resize: none;"></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-gold" style="flex: 1;" onclick="saveNewBook()">YADDA SAXLA</button>
+            <button class="btn-gold" style="flex: 1; background: var(--surface); color: var(--text);" onclick="closeModals()">LƏĞV ET</button>
+        </div>
+    </div>
+</div>
+
+<div id="noteModal" class="modal">
+    <div class="modal-box">
+        <h3 id="selTextPreview" style="font-style: italic; font-size: 0.9rem; margin-bottom: 15px; color: var(--text-s);"></h3>
+        <textarea id="noteInput" class="main-input" placeholder="Qeydiniz..." rows="4"></textarea>
+        <button class="btn-gold" style="width: 100%; margin-top: 15px;" onclick="saveNote()">QEYDİ SAXLA</button>
+    </div>
 </div>
 
 <script>
-    let currentFontSize = 20;
+    let db = { books: [], currentBook: null, settings: { theme: 'dark', fSize: 20 } };
+    let searchMatches = [];
+    let currentMatchIdx = -1;
+    let selectedText = "";
 
-    // Şrift ölçüsünü dəyişmək
-    function changeFontSize(delta) {
-        currentFontSize += delta;
-        if(currentFontSize < 12) currentFontSize = 12;
-        if(currentFontSize > 40) currentFontSize = 40;
-        document.getElementById('readerText').style.fontSize = currentFontSize + 'px';
-        localStorage.setItem('pref-font-size', currentFontSize);
-    }
-
-    // Mövzu seçimi
-    function setTheme(mode) {
-        document.documentElement.setAttribute('data-theme', mode);
-        localStorage.setItem('pref-theme', mode);
-    }
-
-    // Axtarış panelini aç/bağla
-    function toggleSearch() {
-        const area = document.getElementById('searchArea');
-        area.style.display = area.style.display === 'none' ? 'block' : 'none';
-        if(area.style.display === 'block') {
-            document.getElementById('searchInput').focus();
-        }
-    }
-
-    // Professional Axtarış (Mətni vurğulamaq)
-    function searchText() {
-        const query = document.getElementById('searchInput').value.trim();
-        const content = document.getElementById('readerText');
-        const originalText = content.innerText;
-
-        if (query.length < 2) {
-            content.innerHTML = originalText;
-            return;
-        }
-
-        const regex = new RegExp(`(${query})`, 'gi');
-        content.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-    }
-
-    // Tam ekran rejimi
-    function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+    // INITIALIZE
+    function init() {
+        const saved = localStorage.getItem('lib_db');
+        if (saved) db = JSON.parse(saved);
+        
+        document.documentElement.setAttribute('data-theme', db.settings.theme);
+        renderLibrary();
+        
+        // Oxuma vaxtını hesabla
+        setInterval(() => {
+            if(db.currentBook) {
+                db.books.find(b => b.id === db.currentBook).time = (db.books.find(b => b.id === db.currentBook).time || 0) + 1;
+                saveDB();
             }
+        }, 1000);
+    }
+
+    function saveDB() { localStorage.setItem('lib_db', JSON.stringify(db)); }
+
+    // LIBRARY FUNCTIONS
+    function renderLibrary() {
+        const grid = document.getElementById('booksGrid');
+        const query = document.getElementById('libSearch').value.toLowerCase();
+        const filtered = db.books.filter(b => b.title.toLowerCase().includes(query));
+        
+        grid.innerHTML = filtered.map(b => `
+            <div class="book-card" onclick="openBook('${b.id}')">
+                <div>
+                    <h3>${b.title}</h3>
+                    <div class="author">${b.author || 'Naməlum'}</div>
+                </div>
+                <div>
+                    <div class="progress-mini"><div class="progress-fill" style="width: ${b.progress || 0}%"></div></div>
+                    <div style="font-size: 0.6rem; margin-top: 5px; color: var(--gold);">${b.progress || 0}% oxunub</div>
+                </div>
+                <button onclick="deleteBook(event, '${b.id}')" style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: var(--red); cursor: pointer;">✕</button>
+            </div>
+        `).join('');
+
+        document.getElementById('totalBooks').textContent = db.books.length;
+        const totalSecs = db.books.reduce((acc, b) => acc + (b.time || 0), 0);
+        document.getElementById('totalTime').textContent = Math.floor(totalSecs / 60) + 'd';
+    }
+
+    function openBook(id) {
+        db.currentBook = id;
+        const book = db.books.find(b => b.id === id);
+        document.getElementById('readerTitle').textContent = book.title;
+        document.getElementById('readerContent').textContent = book.text;
+        document.getElementById('readerContent').style.fontSize = db.settings.fSize + 'px';
+        
+        document.getElementById('libView').classList.remove('active');
+        document.getElementById('readerView').classList.add('active');
+        
+        const scrollPos = book.scrollPos || 0;
+        setTimeout(() => { document.getElementById('readerMain').scrollTop = scrollPos; }, 10);
+        switchTab('bookmarks');
+    }
+
+    function exitReader() {
+        db.currentBook = null;
+        document.getElementById('readerView').classList.remove('active');
+        document.getElementById('libView').classList.add('active');
+        renderLibrary();
+    }
+
+    // READER FUNCTIONS
+    function handleReaderScroll() {
+        const el = document.getElementById('readerMain');
+        const book = db.books.find(b => b.id === db.currentBook);
+        if(!book) return;
+
+        const pct = Math.floor((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100);
+        book.progress = pct;
+        book.scrollPos = el.scrollTop;
+        document.getElementById('readPercent').textContent = pct + '%';
+        saveDB();
+    }
+
+    function adjustFont(n) {
+        db.settings.fSize += n;
+        document.getElementById('readerContent').style.fontSize = db.settings.fSize + 'px';
+        saveDB();
+    }
+
+    function toggleTheme() {
+        db.settings.theme = db.settings.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', db.settings.theme);
+        saveDB();
+    }
+
+    // SIDEBAR & TABS
+    function switchTab(tab) {
+        const content = document.getElementById('sideContent');
+        const book = db.books.find(b => b.id === db.currentBook);
+        
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(tab.substring(0,3))));
+
+        if(tab === 'bookmarks') {
+            content.innerHTML = (book.bookmarks || []).map(bm => `
+                <div class="note-item" onclick="jumpTo(${bm.pos})">
+                    <div style="color: var(--gold); font-size: 0.7rem;">Səhifə tərəqqisi: ${bm.pct}%</div>
+                    <div style="margin-top: 5px;">${bm.time}</div>
+                </div>
+            `).join('') || 'Əlfəcin yoxdur.';
+        } else if(tab === 'notes') {
+            content.innerHTML = (book.notes || []).map(n => `
+                <div class="note-item">
+                    <div style="font-style: italic; color: var(--text-s); border-left: 2px solid var(--gold); padding-left: 10px; margin-bottom: 8px;">"${n.quote}"</div>
+                    <div>${n.comment}</div>
+                </div>
+            `).join('') || 'Qeyd yoxdur. Mətni seçərək qeyd əlavə edin.';
+        } else if(tab === 'stats') {
+            const wpm = 200;
+            const words = book.text.split(/\s+/).length;
+            content.innerHTML = `
+                <div class="stat-box">
+                    <span class="stat-val">${words}</span><span class="stat-lbl">Söz sayı</span>
+                    <br>
+                    <span class="stat-val">${Math.ceil(words / wpm)} dəq</span><span class="stat-lbl">Təxmini oxuma</span>
+                    <br>
+                    <span class="stat-val">${Math.floor((book.time || 0) / 60)}d</span><span class="stat-lbl">Sərf edilən vaxt</span>
+                </div>
+            `;
         }
     }
 
-    // İlkin ayarları yüklə
-    window.onload = () => {
-        const savedTheme = localStorage.getItem('pref-theme') || 'dark';
-        const savedSize = localStorage.getItem('pref-font-size') || 20;
-        setTheme(savedTheme);
-        currentFontSize = parseInt(savedSize);
-        document.getElementById('readerText').style.fontSize = currentFontSize + 'px';
-    };
-
-    function goBack() {
-        alert("Kitabxanaya qayıdış...");
+    function addBookmark() {
+        const book = db.books.find(b => b.id === db.currentBook);
+        if(!book.bookmarks) book.bookmarks = [];
+        const el = document.getElementById('readerMain');
+        book.bookmarks.push({
+            pos: el.scrollTop,
+            pct: Math.floor((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100),
+            time: new Date().toLocaleTimeString()
+        });
+        saveDB();
+        switchTab('bookmarks');
     }
-</script>
 
+    function jumpTo(pos) { document.getElementById('readerMain').scrollTop = pos; }
+
+    // SELECTION & NOTES
+    function handleSelection() {
+        const sel = window.getSelection().toString().trim();
+        if(sel.length > 3) {
+            selectedText = sel;
+            document.getElementById('selTextPreview').textContent = `"${sel.substring(0, 100)}..."`;
+            showModal('noteModal');
+        }
+    }
+
+    function saveNote() {
+        const comment = document.getElementById('noteInput').value;
+        const book = db.books.find(b => b.id === db.currentBook);
+        if(!book.notes) book.notes = [];
+        book.notes.push({ quote: selectedText, comment: comment });
+        saveDB();
+        closeModals();
+        switchTab('notes');
+        window.getSelection().removeAllRanges();
+    }
+
+    // SEARCH IN TEXT (Professional & Smooth)
+    function toggleReaderSearch() {
+        const rs = document.getElementById('readerSearch');
+        rs.classList.toggle('active');
+        if(rs.classList.contains('active')) document.getElementById('rsInput').focus();
+        else clearSearch();
+    }
+
+    function searchInText() {
+        const q = document.getElementById('rsInput').value.toLowerCase();
+        const content = document.getElementById('readerContent');
+        const book = db.books.find(b => b.id === db.currentBook);
+
+        if(q.length < 2) { content.textContent = book.text; return; }
+
+        const regex = new RegExp(`(${q})`, 'gi');
+        content.innerHTML = book.text.replace(regex, '<mark>$1</mark>');
+        searchMatches = Array.from(content.querySelectorAll('mark'));
+        currentMatchIdx = -1;
+        navSearch(1);
+    }
+
+    function navSearch(dir) {
+        if(!searchMatches.length) return;
+        searchMatches.forEach(m => m.classList.remove('current'));
+        currentMatchIdx = (currentMatchIdx + dir + searchMatches.length) % searchMatches.length;
+        const target = searchMatches[currentMatchIdx];
+        target.classList.add('current');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearSearch() { 
+        const book = db.books.find(b => b.id === db.currentBook);
+        if(book) document.getElementById('readerContent').textContent = book.text;
+    }
+
+    // MODAL HELPERS
+    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModals() { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+        document.getElementById('nbTitle').value = "";
+        document.getElementById('nbText').value = "";
+        document.getElementById('noteInput').value = "";
+    }
+
+    function saveNewBook() {
+        const title = document.getElementById('nbTitle').value;
+        const author = document.getElementById('nbAuthor').value;
+        const text = document.getElementById('nbText').value;
+        if(!title || !text) return alert("Başlıq və mətni doldurun!");
+
+        db.books.push({ id: 'b' + Date.now(), title, author, text, time: 0, progress: 0, bookmarks: [], notes: [] });
+        saveDB();
+        closeModals();
+        renderLibrary();
+    }
+
+    function deleteBook(e, id) {
+        e.stopPropagation();
+        if(confirm('Bu kitabı silmək istəyirsiniz?')) {
+            db.books = db.books.filter(b => b.id !== id);
+            saveDB();
+            renderLibrary();
+        }
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+    window.onload = init;
+</script>
 </body>
 </html>
